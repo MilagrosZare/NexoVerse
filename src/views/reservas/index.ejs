@@ -1,0 +1,85 @@
+<!-- 
+=================================================================
+"MIS RESERVAS": muestras las reservas y tenés la posibilidad de cancelar.
+=================================================================
+-->
+
+<!-- Título -->
+    <section class="page-banner">
+    <div class="wrap">
+        <div class="eyebrow">TU ESPACIO DE JUEGO</div>
+        <h1>MIS <span>RESERVAS.</span></h1>
+        <p>Consultá tus turnos y gestioná tus próximas partidas.</p>
+    </div>
+    </section>
+
+<!-- Sección reserva -->
+
+    <section class="section wrap">
+    <div class="section-heading">
+        <div>
+        <div class="eyebrow">HISTORIAL PERSONAL</div>
+        <h2>TUS TURNOS, <span>A MANO.</span></h2>
+        </div>
+
+        <a class="button button-small" href="/reservar">
+        Nueva reserva ↗
+        </a>
+    </div>
+
+    <% if (reservas.length) { %>
+        <div class="booking-list">
+        <% reservas.forEach(reserva => { %>
+            <article class="booking-card">
+            <div class="booking-datebox">
+                <!-- F E C H A    D E   L A   R E S E R V A -->
+                <strong><%= reserva.fecha.slice(8, 10) %></strong>
+                <span><%= reserva.fecha.slice(5, 7) %> / <%= reserva.fecha.slice(0, 4) %></span>
+            </div>
+
+            <div class="booking-main">
+                <span class="platform-tag"><%= reserva.plataforma %></span>
+                <!-- R E C U R S O: PC, XBOX, PlayStation -->
+                <h3><%= reserva.recurso %></h3>
+                <!--
+                MODALIDAD: TEAM/SOLO
+                CANTIDAD PERSONAS
+                HORAS SOLICITADAS
+                -->
+                <p>
+                <%= reserva.modalidad_juego %> ·
+                <%= reserva.cantidad_personas %> personas ·
+                <%= reserva.duracion %> h
+                </p>
+            </div>
+
+            <!-- Hora de inicio y fin de la reserva -->
+            <div class="booking-time">
+                <strong><%= reserva.hora_inicio %> — <%= reserva.hora_fin %></strong>
+            <!-- E S T A D O   D E   L A   R E S E R V A -->
+                <span class="status status-<%= reserva.estado.toLowerCase() %>">
+                <%= reserva.estado %>
+                </span>
+            </div>
+
+            <% if (reserva.estado === 'CONFIRMADA') { %>
+                <form
+                method="post"
+                action="/reservas/<%= reserva.id %>?_method=DELETE"
+                onsubmit="return confirm('¿Querés cancelar esta reserva?')"
+                >
+                <button class="cancel-link">Cancelar</button>
+                </form>
+            <% } %>
+            </article>
+        <% }) %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+        <span>✦</span>
+        <h2>Todavía no hay reservas.</h2>
+        <p>Cuando encuentres tu próximo turno, lo vas a ver acá.</p>
+        <a class="button" href="/reservar">Elegir un horario ↗</a>
+        </div>
+    <% } %>
+    </section>
