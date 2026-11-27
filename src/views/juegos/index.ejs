@@ -1,0 +1,78 @@
+<!-- 
+========================================================================
+CATÁLOGO DE JUEGOS
+========================================================================
+-->
+
+<section class="page-banner">
+    <div class="wrap">
+        <div class="eyebrow">LO QUE SE JUEGA EN NEXO</div>
+
+        <h1>
+            CATÁLOGO DE
+            <span>JUEGOS.</span>
+        </h1>
+
+        <p>Encontrá tu próximo favorito y descubrí en qué plataforma jugarlo.</p>
+    </div>
+</section>
+
+<section class="section wrap">
+    <form class="filter-row" method="get" action="/juegos">
+        <label for="plataforma">Plataforma</label>
+
+        <select id="plataforma" name="plataforma">
+            <option value="">Todas</option>
+
+            <% tipos.forEach(t => { %>
+                <option
+                    value="<%= t.id %>"
+                    <%= plataforma === t.id ? 'selected' : '' %>
+                >
+                    <%= t.nombre %>
+                </option>
+            <% }) %>
+        </select>
+
+        <button class="button button-small">Filtrar</button>
+    </form>
+
+    <div class="game-grid">
+        <% juegos.forEach((j, i) => { %>
+            <article class="game-card">
+                <div class="game-cover cover-<%= i % 5 %>">
+                    <span class="cover-mark">✦</span>
+                    <span class="cover-id">
+                        NEXO / <%= String(i + 1).padStart(2, '0') %>
+                    </span>
+                </div>
+
+                <div class="game-details">
+                    <span class="platform-tag">
+                        <%= j.plataformas || 'Gaming' %>
+                    </span>
+
+                    <h3><%= j.nombre %></h3>
+
+                    <p>
+                        <%= j.descripcion || 'Disponible para jugar en nuestras estaciones.' %>
+                    </p>
+
+                    <% if (j.genero) { %>
+                        <small><%= j.genero %></small>
+                    <% } %>
+                </div>
+            </article>
+        <% }) %>
+    </div>
+
+    <% if (!juegos.length) { %>
+        <div class="empty-state">
+            <span>✦</span>
+
+            <h2>Pronto, más juegos.</h2>
+
+            <p>Estamos preparando el catálogo para esta plataforma.</p>
+        </div>
+    <% } %>
+</section>
