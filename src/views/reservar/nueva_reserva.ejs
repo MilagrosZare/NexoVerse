@@ -1,0 +1,333 @@
+<!-- 
+=====================================================================
+SECCIÓN RESERVAS: "ARMÁ TU PARTIDA" a través de un formulario
+=====================================================================
+-->
+
+<!-- Título -->
+<section class="page-banner">
+  <div class="wrap">
+    <div class="eyebrow">ENCONTRÁ TU PRÓXIMO TURNO</div>
+    <h1>ARMÁ TU <span>PARTIDA.</span></h1>
+    <p>
+      Elegí plataforma, equipo y horario. Atención todos los días de 10:00 a 21:00.
+    </p>
+  </div>
+</section>
+
+<!-- Sección por si hay un error -->
+
+<section class="section wrap booking-layout">
+  <div class="booking-form-card">
+    <% if (error) { %>
+      <div class="form-error"><%= error %></div>
+    <% } %>
+
+    <!-- F O R M U L A R I O -->
+
+    <form
+      method="post"
+      action="/reservar"
+      id="booking-form"
+      class="form-grid"
+    >
+
+    <!-- ··············· M O D A L I D A D ··············· -->
+    
+      <label>
+        Modalidad
+        <select name="modalidad" id="modalidad" required>
+          <option value="">Seleccionar</option>
+          <option value="SOLO" <%= valores.modalidad === 'SOLO' ? 'selected' : '' %>>
+            Solo
+          </option>
+          <option value="TEAM" <%= valores.modalidad === 'TEAM' ? 'selected' : '' %>>
+            Team
+          </option>
+        </select>
+      </label>
+
+    <!-- ··············· P L A T A F O R M A ··············· -->
+
+      <label>
+        Plataforma
+        <select name="plataforma" id="plataforma" required>
+          <option value="">Seleccionar</option>
+
+          <% [...new Map(
+            recursos.map(recurso => [
+              recurso.tipo_recurso_id,
+              {
+                id: recurso.tipo_recurso_id,
+                nombre: recurso.plataforma
+              }
+            ])
+          ).values()].forEach(tipo => { %>
+            <option
+              value="<%= tipo.id %>"
+              <%= String(valores.plataforma) === String(tipo.id) ? 'selected' : '' %>
+            >
+              <%= tipo.nombre %>
+            </option>
+          <% }) %>
+        </select>
+      </label>
+
+    <!-- ··············· P E R S O N A S ··············· -->
+
+      <label>
+        Personas
+        <input
+        type="number"
+        name="personas"
+        id="personas"
+        min="1"
+        max="10"
+        value="<%= valores.personas||1 %>"
+        required
+        >
+      </label>
+
+    <!-- ··············· F E C H A ··············· -->
+
+      <label>
+        Fecha
+        <input
+          type="date"
+          name="fecha"
+          id="fecha"
+          min="<%= valores.fecha %>"
+          value="<%= valores.fecha %>"
+          required
+        >
+      </label>
+
+    <!-- ··············· D U R A C I Ó N ··············· -->
+
+      <label>
+        Duración
+        <select name="duracion" id="duracion">
+          <option value="1" <%= valores.duracion === '1' ? 'selected' : '' %>>
+            1 hora
+          </option>
+          <option value="2" <%= valores.duracion === '2' ? 'selected' : '' %>>
+            2 horas
+          </option>
+          <option value="3" <%= valores.duracion === '3' ? 'selected' : '' %>>
+            3 horas
+          </option>
+        </select>
+      </label>
+      
+    <!-- ··············· E Q U I P O   O   S A L A ··············· -->
+
+
+      <label class="span-2">
+        Equipo o sala
+        <select name="recurso" id="recurso" required disabled>
+          <option value="">Completá los datos para ver disponibilidad</option>
+        </select>
+      </label>
+      
+    <!-- ··············· H O R A R I O ··············· -->
+
+
+      <label class="span-2">
+        Horario disponible
+        <select name="inicio" id="inicio" required disabled>
+          <option value="">Primero elegí una plataforma y fecha</option>
+        </select>
+      </label>
+
+      <p class="form-hint span-2">
+        Los horarios se muestran de acuerdo con la disponibilidad real y la duración elegida.
+      </p>
+
+      <button class="button span-2" id="submit-booking" disabled>
+        Confirmar reserva <span>↗</span>
+      </button>
+    </form>
+  </div>
+
+<!-- 
+---------------------------------------------------------------------
+    INFORMACIÓN ADICIONAL
+---------------------------------------------------------------------
+-->
+  
+  <aside class="booking-aside">
+    <div class="eyebrow">ANTES DE CONFIRMAR</div>
+    <h2>TODO LISTO<br>PARA <span>JUGAR.</span></h2>
+
+    <ul>
+      <li>Atendemos todos los días, de 10:00 a 21:00.</li>
+      <li>Podés reservar por 1, 2 o 3 horas.</li>
+      <li>En TEAM con PC asignamos un equipo por persona.</li>
+      <li>Las salas tienen capacidad máxima indicada.</li>
+      <li>Podés cancelar una reserva desde tu perfil.</li>
+    </ul>
+
+    <div class="aside-note">
+      Tu reserva queda confirmada al finalizar este paso.
+    </div>
+  </aside>
+</section>
+
+<!-- 
+---------------------------------------------------------------------
+    CONEXIÓN DE LOS SELECTORES CON LA CONSULTA AL SERVIDOR
+---------------------------------------------------------------------
+-->
+<script>
+  // Guarda referencias a los campos que afectan la disponibilidad.
+  const controls = [
+    'modalidad',
+    'plataforma',
+    'personas',
+    'fecha',
+    'duracion'
+  ].map(id => document.getElementById(id)); //Se realiza un mapeo de cada variable
+
+  const modalityInput=document.getElementById('modalidad'), peopleInput=document.getElementById('personas');
+
+  const resource = document.getElementById('recurso');
+  const time = document.getElementById('inicio');
+  const submit = document.getElementById('submit-booking');
+
+  // Control de la cantidad de personas según modalidad elegida: SOLO y TEAM
+  function applyPeopleLimit(){
+    const isSolo=modalityInput.value==='SOLO';
+    if (isSolo) {
+      peopleInput.max = '1';
+    } else {
+      peopleInput.max = '10'
+    }
+    peopleInput.readOnly=isSolo; // readOnly permite que un campo no pueda modificarse manualmente
+    if(isSolo)peopleInput.value='1';
+    else if(Number(peopleInput.value)>10)peopleInput.value='10';
+  }
+
+  // Consulta al servidor cada vez que cambia una opción del formulario.
+  async function refreshAvailability() {
+    resource.innerHTML = '<option value="">Seleccioná un equipo o sala</option>';
+    time.innerHTML = '<option value="">Seleccioná un horario</option>';
+
+    resource.disabled = true; //El usuario no puede interactuar con este elemento.
+    time.disabled = true; //El usuario no puede interactuar con este elemento.
+    submit.disabled = true; //El usuario no puede interactuar con este elemento.
+
+    const [
+      modalidad,
+      plataforma,
+      personas,
+      fecha,
+      duracion
+    ] = controls.map(control => control.value); //Se obtienen los valores seleccionados por el cliente
+
+    if (!modalidad || !plataforma || !personas || !fecha || !duracion) {
+      resource.innerHTML =
+        '<option value="">Completá los datos para ver disponibilidad</option>';
+      return;
+    } //Se validan que los datos estén completos
+
+    try {
+      const params = new URLSearchParams({ //permite construir parámetros para una URL, porque necesitamos enviarle esos datos al servidor, ej: ?modalidad=TEAM&plataforma=PC&personas=3&fecha=2026-11-25&duracion=2
+        modalidad,
+        plataforma,
+        personas,
+        fecha,
+        duracion
+      });
+
+      const response = await fetch( //realiza solicitudes HTTP
+        `/reservar/disponibilidad?${params.toString()}` //Se hace una solicitud GET y se utiliza la URL --> params
+      );
+
+      const data = await response.json(); //necesitamos esperar que el servidor responda
+
+      if (!response.ok) { //comprueba si la respuesta HTTP fue exitosa
+        throw new Error(data.error);
+      }
+
+      // Conserva solo los recursos que tienen horarios libres.
+      const available = data.recursos.filter(
+        recurso => recurso.horarios.length > 0 //solo se filtra y conserva los equipos o salas que tienen al menos un horario disponible
+      );
+
+      //replaceChildren() --> reemplaza los elementos internos del selector
+      resource.replaceChildren(
+        new Option(
+          available.length
+            ? 'Seleccionar equipo o sala'
+            : 'No hay equipos con horarios libres',
+          ''
+        )
+      );
+
+      // Recorre cada recurso disponible.
+      for (const recurso of available) {
+        let tipoRecurso = 'Equipo individual';
+
+        if (recurso.modalidad_recurso === 'SALA') {
+          tipoRecurso = 'Sala privada';
+        } else if (recurso.modalidad_recurso === 'GRUPO') {
+          tipoRecurso = 'grupo de PC';
+        }
+
+        //Selección de equipo o sala
+        const option = new Option(
+          `${recurso.nombre} · ${tipoRecurso} · ${recurso.horarios.length} horarios`,
+          recurso.id
+        );
+
+        option.dataset.slots = JSON.stringify(recurso.horarios); //Guardamos los horarios disponibles.
+        resource.add(option); //Agregamos el recurso al selector.
+      }
+      resource.disabled = available.length === 0; //Si no hay recursos disponibles, el sector permanece deshabilitado
+
+    } catch (error) {
+      resource.innerHTML = `<option value="">${error.message}</option>`;
+    }
+  }
+
+  // Al elegir un recurso, muestra los horarios disponibles para ese equipo o sala.
+  resource.addEventListener('change', () => {
+    const option = resource.selectedOptions[0];
+    let hours = []; //Creamos un array vacío para guardar los horarios
+
+    try {
+      hours = JSON.parse(option.dataset.slots || '[]'); //Se recuperan los horarios que habían guardado en dataset.slots
+    } catch (error) {
+      hours = [];
+    }
+
+//Muestra los horarios a seleccionar
+    if (hours.length > 0) {
+      time.innerHTML =
+        '<option value="">Seleccionar horario</option>' +
+        hours.map(horario => `
+          <option value="${horario.start}"> 
+            ${horario.start} — ${horario.end}
+          </option>
+        `).join('');
+    } else {
+      time.innerHTML = '<option value="">Seleccioná un recurso</option>';
+    }
+
+    time.disabled = hours.length === 0;
+    submit.disabled = true; 
+  });
+
+  time.addEventListener('change', () => {
+    submit.disabled = !time.value; //Si hay un horario elegido, el botón se habilita. Si no hay un horario elegido, el botón permanece deshabilitado.
+  });  //refreshAvailability() vuelve a consultar los recursos disponibles.
+  modalityInput.addEventListener('change',()=>{applyPeopleLimit();refreshAvailability();});
+
+  controls.slice(1).forEach(control=>control.addEventListener('change',refreshAvailability));
+  applyPeopleLimit();
+
+  // Si el formulario ya tiene datos, consulta horarios al cargar la página.
+  if (controls.every(control => control.value)) {
+    refreshAvailability();
+  }
+</script>
