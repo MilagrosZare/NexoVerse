@@ -1,0 +1,133 @@
+<!-- CONTACTO: el formulario envía una consulta; "valores" permite conservar lo escrito si hay un error. -->
+
+<!-- Título -->
+<section class="page-banner">
+    <div class="wrap">
+        <div class="eyebrow">EVENTOS, CUMPLEAÑOS Y MÁS</div>
+
+        <h1>
+            HABLEMOS DE
+            <span>TU PLAN.</span>
+        </h1>
+
+        <p>
+            Contanos qué estás organizando y te ayudamos a encontrar el setup ideal.
+        </p>
+    </div>
+</section>
+
+<!-- Sección con información -->
+
+<section class="section wrap contact-layout">
+    <div class="contact-copy">
+        <div class="eyebrow">CONTACTO</div>
+
+        <h2>
+            UNA PARTIDA<br>
+            EN <span>GRANDE.</span>
+        </h2>
+
+        <p>
+            Dejanos los detalles de tu evento grupal, cumpleaños o alquiler especial.
+            Nuestro equipo se va a poner en contacto.
+        </p>
+
+        <div class="contact-detail">
+            <span>01</span>
+
+            <div>
+                <strong>Contanos tu idea</strong>
+                <p>Fecha, cantidad de invitados y qué tenés en mente.</p>
+            </div>
+        </div>
+
+        <div class="contact-detail">
+            <span>02</span>
+
+            <div>
+                <strong>Te respondemos</strong>
+                <p>Coordinamos una propuesta a medida.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- F o r m u l a r i o -->
+
+    <div class="contact-card">
+        <% if (error) { %>
+            <div class="form-error"><%= error %></div>
+        <% } %>
+        
+
+        <form method="post" action="/contacto" class="form-grid">
+            <label class="span-2">
+                Nombre
+                <input
+                    name="nombre"
+                    required
+                    maxlength="100"
+                    value="<%= valores.nombre || '' %>"
+                >
+            </label>
+
+            <label class="span-2">
+                Correo electrónico
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    maxlength="200"
+                    value="<%= valores.email || '' %>"
+                >
+            </label>
+
+            <label>
+                Fecha estimada
+                <input
+                    type="date"
+                    name="fecha_evento"
+                    value="<%= valores.fecha_evento || '' %>"
+                >
+            </label>
+
+            <label>
+                Invitados aproximados
+                <input
+                    type="number"
+                    name="invitados"
+                    min="1"
+                    max="100"
+                    value="<%= valores.invitados || '' %>"
+                >
+            </label>
+
+            <label class="span-2">
+                Motivo
+                <select name="motivo" required>
+                    <option value="">Seleccionar</option>
+
+                    <% ['Cumpleaños', 'Evento grupal', 'Alquiler especial', 'Otra consulta'].forEach(m => { %>
+                        <option <%= valores.motivo === m ? 'selected' : '' %>>
+                            <%= m %>
+                        </option>
+                    <% }) %>
+                </select>
+            </label>
+
+            <label class="span-2">
+                Mensaje
+                <textarea
+                    name="mensaje"
+                    rows="5"
+                    required
+                    minlength="10"
+                    maxlength="3000"
+                ><%= valores.mensaje || '' %></textarea>
+            </label>
+
+            <button class="button span-2">
+                Enviar consulta <span>↗</span>
+            </button>
+        </form>
+    </div>
+</section>
