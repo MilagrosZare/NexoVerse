@@ -1,0 +1,33 @@
+<header class="site-header">
+  <div class="nav wrap">
+    <a class="brand header-brand" href="/" aria-label="NexoVerse Gaming, inicio">
+      <img src="/img/Logo%20NV.png" alt="" class="header-brand-icon">
+      <span class="header-brand-name">NEXO<span class="brand-light">VERSE</span></span>
+    </a>
+
+    <!-- Se activa dependiendo de dónde esté posicionado el cliente. -->
+    <nav>
+      <a class="nav-link <%= path === '/' ? 'active' : '' %>" href="/">Inicio</a>
+      <a class="nav-link <%= path === '/juegos' ? 'active' : '' %>" href="/juegos">Juegos</a>
+      <a class="nav-link <%= path.startsWith('/contacto') ? 'active' : '' %>" href="/contacto">Contacto</a>
+    </nav>
+<!-- Si el usuario inició sesión, figura "Mis reservas" -->
+    <div class="nav-actions">
+      <% if (user) { %>
+        <!-- Solo una cuenta ADMIN puede ver el enlace de panel. -->
+        <% if (user.rol === 'ADMIN') { %>
+          <a class="nav-link" href="/admin">Administración</a>
+        <% } %>
+        <a class="nav-link" href="/reservas">Mis reservas</a>
+        <a class="button button-small button-outline" href="/reservar">Reservar</a>
+        <span class="user-chip"><%= user.nombre %></span>
+        <form method="post" action="/auth/salir">
+          <button class="text-button" type="submit">Salir</button>
+        </form>
+      <% } else { %> <!-- Si el usuario no inició sesión, indica "Ingresar o crear cuenta" -->
+        <a class="nav-link" href="/auth/ingresar">Ingresar</a>
+        <a class="button button-small" href="/auth/registro">Crear cuenta</a>
+      <% } %>
+    </div>
+  </div>
+</header>
