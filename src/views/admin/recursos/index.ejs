@@ -1,0 +1,19 @@
+<%# Esta página permite agregar un recurso y revisar los equipos ya guardados. %>
+<section class="page-banner"><div class="wrap"><div class="eyebrow">ADMINISTRACIÓN</div><h1>GESTIÓN DE <span>RECURSOS.</span></h1><p>Equipos y salas del local.</p></div></section>
+<section class="section wrap"><div class="contact-card">
+  <%# El error aparece cuando algún dato no pasó la validación o el nombre ya existe. %>
+  <% if (error) { %><div class="form-error"><%= error %></div><% } %>
+  <%# El formulario envía la plataforma, el nombre, el tipo y la capacidad del recurso. %>
+  <form method="post" action="/admin/recursos" class="form-grid">
+    <label>Plataforma<select name="plataforma" required><% plataformas.forEach(plataforma => { %><option value="<%= plataforma.id %>"><%= plataforma.nombre %></option><% }) %></select></label>
+    <label>Nombre<input name="nombre" required maxlength="100" placeholder="PC-05"></label>
+    <label>Tipo<select name="modalidad"><option value="INDIVIDUAL">Equipo individual</option><option value="SALA">Sala</option></select></label>
+    <label>Capacidad<input name="capacidad" type="number" min="1" max="32" value="1" required></label>
+    <label class="span-2">Descripción<input name="descripcion" maxlength="255"></label>
+    <button class="button span-2">Agregar recurso ↗</button>
+  </form>
+</div></section>
+<section class="section wrap"><div class="section-heading"><h2>RECURSOS REGISTRADOS</h2></div>
+  <%# La lista permite retirar recursos que todavía no tengan reservas históricas. %>
+  <% recursos.forEach(recurso => { %><article class="booking-card"><div class="booking-main"><span class="platform-tag"><%= recurso.plataforma %></span><h3><%= recurso.nombre %></h3><p><%= recurso.modalidad_recurso %> · Hasta <%= recurso.capacidad_maxima %> personas · <%= recurso.estado %></p></div><form method="post" action="/admin/recursos/<%= recurso.id %>?_method=DELETE" onsubmit="return confirm('¿Eliminar este recurso?')"><button class="cancel-link">Eliminar</button></form></article><% }) %>
+</section>
