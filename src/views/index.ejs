@@ -1,0 +1,222 @@
+<!--
+====================================================
+PANTALLA PRINCIPAL
+====================================================
+-->
+
+<!--
+----------------------------------------------------
+PRESENTACIÓN: "JUGÁ A OTRO NIVEL"
+----------------------------------------------------
+-->
+    <section class="hero">
+    <div class="hero-glow"></div>
+
+    <!-- Disponibilidad -->
+    <div class="wrap hero-content">
+        <div class="eyebrow">
+        <span class="live-dot"></span>
+        ABIERTO HOY 10:00—21:00
+        </div>
+
+    <!-- Título -->
+        <h1>
+        JUGÁ A OTRO<br>
+        <span>NIVEL.</span>
+        </h1>
+
+        <p class="hero-copy">
+        El setup está listo. Elegí tu plataforma, reservá tu lugar y que empiece la partida.
+        </p>
+
+        <div class="hero-actions">
+        <!-- Si el cliente inició sesión, directamente va a "reservar", si el cliente no inició sesión, te lleva a "registro". -->
+        <a
+            class="button"
+            href="<%= user ? '/reservar' : '/auth/registro' %>"
+        >
+            Reservar mi lugar <span>↗</span>
+        </a>
+
+        <a class="button button-ghost" href="/juegos">
+            Explorar juegos
+        </a>
+        </div>
+
+        <div class="hero-stats">
+        <div>
+            <strong><%= recursos.length %></strong>
+            <span>estaciones disponibles</span>
+        </div>
+
+        <div class="stat-line"></div>
+
+        <div>
+            <strong>10—21</strong>
+            <span>todos los días</span>
+        </div>
+        </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+        <div class="art-ring ring-one"></div>
+        <div class="art-ring ring-two"></div>
+
+        <div class="art-console">
+        <div class="console-top"></div>
+        <div class="console-light"></div>
+        <div class="console-foot"></div>
+        </div>
+
+        <div class="art-cross">✣</div>
+        <div class="art-square">□</div>
+    </div>
+    </section>
+
+<!--
+    ----------------------------------------------------
+    PRESENTACIÓN: "EL LUGAR DE TU PRÓXIMA VICTORIA"
+    ----------------------------------------------------
+-->
+
+    <section class="section wrap">
+    <div class="section-heading">
+        <div>
+        <div class="eyebrow">ELEGÍ TU SETUP</div>
+        <h2>
+            EL LUGAR DE TU PRÓXIMA
+            <span>VICTORIA.</span>
+        </h2>
+        </div>
+    <!-- Si el cliente inició sesión, directamente va a "reservar", si el cliente no inició sesión, te lleva a "inicio sesión". -->
+        <a
+        class="arrow-link"
+        href="<%= user ? '/reservar' : '/auth/ingresar' %>"
+        >
+        Ver disponibilidad <span>↗</span>
+        </a>
+    </div>
+
+    <div class="resource-grid">
+        <% recursos.slice(0, 3).forEach((r, i) => { %>
+        <article class="resource-card">
+            <div class="card-top">
+            <span class="platform-tag"><%= r.plataforma %></span>
+
+            <span class="availability">
+                <i></i>
+                Disponible
+            </span>
+            </div>
+
+            <div class="resource-visual visual-<%= i %>">
+            <div class="visual-glyph">
+                <%= r.plataforma === 'PC' ? '⌘' : '◉' %>
+            </div>
+
+            <span class="visual-no">0<%= i + 1 %></span>
+            </div>
+
+            <div class="resource-info">
+            <div>
+                <h3>
+                <%= r.modalidad_recurso === 'SALA'
+                    ? 'Sala privada'
+                    : r.plataforma + ' gaming' %>
+                </h3>
+
+                <p>
+                <%= r.nombre %> · Hasta <%= r.capacidad_maxima %> personas
+                </p>
+            </div>
+    <!-- Si el cliente inició sesión, directamente va a "reservar", si el cliente no inició sesión, te lleva a "inicio de sesión". -->
+            <a
+                href="<%= user ? '/reservar' : '/auth/ingresar' %>"
+                class="round-arrow"
+            >
+                ↗
+            </a>
+            </div>
+        </article>
+        <% }) %>
+    </div>
+    </section>
+
+<!--
+    ----------------------------------------------------
+    PRESENTACIÓN: "JUGÁ TUS FAVORITOS"/CATÁLOGO
+    ----------------------------------------------------
+-->
+
+    <section class="game-strip">
+    <div class="wrap strip-inner">
+        <div>
+        <div class="eyebrow">CATÁLOGO SELECCIONADO</div>
+        <h2>
+            JUGÁ TUS
+            <span>FAVORITOS.</span>
+        </h2>
+        </div>
+
+        <div class="mini-games">
+        <% juegos.slice(0, 4).forEach(j => { %>
+            <div class="mini-game">
+            <span class="game-orb">✦</span>
+
+            <div>
+                <strong><%= j.nombre %></strong>
+                <small><%= j.plataformas || 'Multiplataforma' %></small>
+            </div>
+            </div>
+        <% }) %>
+        </div>
+
+        <a class="arrow-link" href="/juegos">
+        Ver catálogo <span>↗</span>
+        </a>
+    </div>
+    </section>
+
+<!--
+    ----------------------------------------------------
+    PRESENTACIÓN: "PRÓXIMAS PARTIDAS" = solo cuando el cliente inició sesión.
+    ----------------------------------------------------
+-->
+    <% if (user) { %>
+    <section class="section wrap">
+        <div class="section-heading">
+        <div>
+            <div class="eyebrow">TU ACTIVIDAD</div>
+            <h2>
+            PRÓXIMAS
+            <span>PARTIDAS.</span>
+            </h2>
+        </div>
+
+        <a class="arrow-link" href="/reservas">
+            Todas mis reservas <span>↗</span>
+        </a>
+        </div>
+
+        <% if (reservas.length) { %>
+        <div class="booking-preview">
+            <% reservas.forEach(b => { %>
+            <div class="booking-row">
+                <span class="booking-date"><%= b.fecha %></span>
+                <strong><%= b.recurso %></strong>
+                <span><%= b.hora_inicio %> — <%= b.hora_fin %></span>
+
+                <span class="status status-<%= b.estado.toLowerCase() %>">
+                <%= b.estado %>
+                </span>
+            </div>
+            <% }) %>
+        </div>
+        <% } else { %>
+        <p class="muted">
+            Todavía no tenés reservas.
+            <a href="/reservar">Elegí tu próximo turno.</a>
+        </p>
+        <% } %>
+    </section>
+    <% } %>
