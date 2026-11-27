@@ -1,0 +1,11 @@
+<%# La tabla permite revisar reservas, crear turnos y modificar o cancelar los confirmados. %>
+<section class="page-banner"><div class="wrap"><div class="eyebrow">ADMINISTRACIÓN</div><h1>GESTIÓN DE <span>RESERVAS.</span></h1><p>Reservas de todos los clientes.</p></div></section>
+<section class="section wrap"><div class="section-heading"><h2>TURNOS REGISTRADOS</h2><a class="button" href="/admin/reservas/nueva">Crear reserva ↗</a></div>
+  <%# El controlador pasa una lista de reservas con cliente y recurso asociados. %>
+  <% reservas.forEach(reserva => { %>
+    <article class="booking-card"><div class="booking-datebox"><strong><%= reserva.fecha %></strong></div><div class="booking-main"><span class="platform-tag"><%= reserva.plataforma %></span><h3><%= reserva.cliente %></h3><p><%= reserva.email %> · <%= reserva.recurso %></p><p><%= reserva.modalidad_juego %> · <%= reserva.cantidad_personas %> personas · <%= reserva.duracion %> h</p></div><div class="booking-time"><strong><%= reserva.hora_inicio %> — <%= reserva.hora_fin %></strong><span class="status"><%= reserva.estado %></span></div>
+      <%# Solo las reservas confirmadas pueden reprogramarse o cancelarse. %>
+      <% if (reserva.estado === 'CONFIRMADA') { %><div class="booking-actions"><a class="button button-small" href="/admin/reservas/<%= reserva.id %>/editar">Cambiar horario</a><form method="post" action="/admin/reservas/<%= reserva.id %>?_method=DELETE" onsubmit="return confirm('¿Cancelar esta reserva?')"><button class="cancel-link">Cancelar</button></form></div><% } %>
+    </article>
+  <% }) %>
+</section>

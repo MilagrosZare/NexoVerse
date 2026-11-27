@@ -1,0 +1,13 @@
+<%# El formulario deja cambiar la fecha y hora manteniendo cliente y recurso. %>
+<section class="page-banner"><div class="wrap"><div class="eyebrow">ADMINISTRACIÓN</div><h1>CAMBIAR <span>HORARIO.</span></h1><p><%= reserva.cliente %> · <%= reserva.nombre_recurso %></p></div></section>
+<section class="section wrap"><div class="contact-card">
+  <%# Informa al administrador si el horario nuevo no está disponible. %>
+  <% if (error) { %><div class="form-error"><%= error %></div><% } %>
+  <%# _method=PUT adapta la actualización al formulario HTML, que solo admite GET y POST. %>
+  <form method="post" action="/admin/reservas/<%= reserva.id %>?_method=PUT" class="form-grid">
+    <label>Nueva fecha<input type="date" name="fecha" value="<%= reserva.fecha %>" required></label>
+    <label>Nueva hora<select name="inicio"><% for (let hora = 10; hora < 21; hora++) { const texto = `${String(hora).padStart(2, '0')}:00`; %><option value="<%= texto %>" <%= reserva.hora_inicio === texto ? 'selected' : '' %>><%= texto %></option><% } %></select></label>
+    <label>Duración<select name="duracion"><% [1, 2, 3].forEach(horas => { %><option value="<%= horas %>" <%= Number(reserva.duracion) === horas ? 'selected' : '' %>><%= horas %> horas</option><% }) %></select></label>
+    <button class="button span-2">Guardar horario ↗</button>
+  </form>
+</div></section>
