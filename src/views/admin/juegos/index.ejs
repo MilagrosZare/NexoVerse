@@ -1,0 +1,14 @@
+<%# La lista muestra cada juego y ofrece enlaces para editar, eliminar o agregar otro. %>
+<section class="page-banner"><div class="wrap"><div class="eyebrow">ADMINISTRACIÓN</div><h1>GESTIÓN DE <span>JUEGOS.</span></h1><p>Administrá los títulos del catálogo.</p></div></section>
+<section class="section wrap">
+  <div class="section-heading"><h2>JUEGOS REGISTRADOS</h2><a class="button" href="/admin/juegos/nuevo">Agregar juego ↗</a></div>
+  <%# EJS recorre la lista de juegos que el controlador obtuvo de SQLite. %>
+  <% if (juegos.length) { %>
+    <% juegos.forEach(juego => { %>
+      <article class="booking-card"><div class="booking-main"><h3><%= juego.nombre %></h3><p><%= juego.plataformas || 'Sin plataforma' %> · <%= juego.genero || 'Sin género' %></p><p><%= juego.descripcion || '' %></p></div>
+        <%# Los formularios usan POST; _method permite enviar PUT o DELETE desde HTML. %>
+        <div class="booking-actions"><a class="button button-small" href="/admin/juegos/<%= juego.id %>/editar">Editar</a><form method="post" action="/admin/juegos/<%= juego.id %>?_method=DELETE" onsubmit="return confirm('¿Eliminar este juego?')"><button class="cancel-link">Eliminar</button></form></div>
+      </article>
+    <% }) %>
+  <% } else { %><div class="empty-state"><h2>No hay juegos cargados.</h2></div><% } %>
+</section>

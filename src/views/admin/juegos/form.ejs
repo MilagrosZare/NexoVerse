@@ -1,0 +1,16 @@
+<%# El mismo formulario sirve para crear un juego o cambiar uno existente. %>
+<section class="page-banner"><div class="wrap"><div class="eyebrow">ADMINISTRACIÓN</div><h1><%= juego.id ? 'EDITAR' : 'AGREGAR' %> <span>JUEGO.</span></h1></div></section>
+<section class="section wrap"><div class="contact-card">
+  <%# Si el controlador detectó un error, lo muestra arriba del formulario. %>
+  <% if (error) { %><div class="form-error"><%= error %></div><% } %>
+  <%# El ID determina si el formulario enviará una creación o una actualización. %>
+  <form method="post" action="<%= juego.id ? '/admin/juegos/' + juego.id + '?_method=PUT' : '/admin/juegos' %>" class="form-grid">
+    <label class="span-2">Nombre<input name="nombre" required maxlength="100" value="<%= juego.nombre || '' %>"></label>
+    <label>Género<input name="genero" maxlength="80" value="<%= juego.genero || '' %>"></label>
+    <label>Imagen<input name="imagen" maxlength="255" value="<%= juego.imagen || '' %>"></label>
+    <label class="span-2">Descripción<textarea name="descripcion" maxlength="1000"><%= juego.descripcion || '' %></textarea></label>
+    <%# Cada casilla representa una plataforma y conserva la selección al editar. %>
+    <fieldset class="span-2"><legend>Plataformas</legend><% plataformas.forEach(plataforma => { %><label><input type="checkbox" name="plataformas" value="<%= plataforma.id %>" <%= plataformasSeleccionadas.includes(plataforma.id) ? 'checked' : '' %>><%= plataforma.nombre %></label><% }) %></fieldset>
+    <button class="button span-2"><%= juego.id ? 'Guardar cambios' : 'Agregar juego' %> ↗</button>
+  </form>
+</div></section>
